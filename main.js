@@ -25,13 +25,22 @@ mongoClient.connect("mongodb://"+mongoHost+":"+mongoPort+"/test", function(err, 
     console.log("Connected to Mongo DB " + mongoHost + ":" + mongoPort);
 });
 
+app.use(express.static('view'));
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
+
 var router = express.Router();
 
 router.get('/comments/:newsId', function(req, res) {
     var newsId = req.params.newsId;
 
-    console.log(newsId);
-    mongoDB.collection(COMMENTS_COLLECTION).find().toArray(function(err, comments) {
+    console.log({ "newsId" : newsId });
+    mongoDB.collection(COMMENTS_COLLECTION).find({ "newsId" : newsId }).toArray(function(err, comments) {
         res.json(comments);
     });
 
@@ -46,13 +55,13 @@ router.get('/createTestdata', function(req, res) {
     collection = mongoDB.collection(COMMENTS_COLLECTION);
 
     collection.insert({
-        "newsid": "news-schnee",
+        "newsId": "news-schnee",
         "text": "Hallo Welt",
         "autor": "Maxi"
     });
 
     collection.insert({
-        "newsid": "news-schnee",
+        "newsId": "news-schnee",
         "text": "Ab auf die Piste!",
         "autor": "Maxi Mera"
     });
@@ -63,5 +72,6 @@ router.get('/createTestdata', function(req, res) {
 
 
 app.use('/api', router);
+
 app.listen(port);
 console.log('Server started on port ' + port);
