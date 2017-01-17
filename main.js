@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 var port = 8080;        // set our port
 
-var mongoHost = "10.1.6.210";
+var mongoHost = "commentsservice-mongo";
 var mongoPort = "27017";
 var mongoDB;
 const COMMENTS_COLLECTION = "comments";
