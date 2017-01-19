@@ -24,10 +24,12 @@ node {
    stage('Starte Testumgebung') {
 
         def t = an.startTestenvironment()
+        sh './docker service update --replicas 1 --image ' + commentsserviceImageName + ' ' + t.fullServiceName('commentsservice')
+
 
         commentsserviceWebport = t.getPublishedPort('commentsservice', 8080)
         echo '8080 -> ' + commentsserviceWebport
-
+        an.waitForTCP(commentsserviceWebport)
    }
 }
 
@@ -39,7 +41,7 @@ stage ('Live Deployment'){
             [$class: 'TextParameterDefinition', defaultValue: 'uat1', description: 'Target', name: 'target']
         ]
     )
-    
+
     echo ("Env: "+userInput['env'])
     echo ("Target: "+userInput['target'])
 
