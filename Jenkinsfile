@@ -34,7 +34,7 @@ node {
 }
 
 
-stage ('Live Deployment'){
+stage ('Manuelle Tests'){
     def userInput = input(
         id: 'userInput', message: 'Erfolgreich getestete Version erreichbar unter http://10.1.6.210:'+commentsserviceWebport+' Live Deployment?', parameters: [
             [$class: 'TextParameterDefinition', defaultValue: 'uat', description: 'Environment', name: 'env'],
@@ -45,5 +45,10 @@ stage ('Live Deployment'){
     echo ("Env: "+userInput['env'])
     echo ("Target: "+userInput['target'])
 
-    an.deployInProduction('commentsservice', commentsserviceImageName)
+}
+
+node {
+    stage ('Live Deployment'){
+        an.deployInProduction('commentsservice', commentsserviceImageName)
+    }
 }
