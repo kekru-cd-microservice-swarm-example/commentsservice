@@ -4,15 +4,14 @@ import steps.CDMain
 def an
 def commentsserviceWebport
 def commentsserviceImageName
-
+def borderproxyPort
 
 node {
-   def commit_id    
-  
+
    stage('Preparation') {
 
       git 'https://github.com/kekru-cd-microservice-swarm-example/commentsservice'
-      
+
       an = new CDMain(steps)
       an.init()
    }
@@ -21,12 +20,14 @@ node {
 
       commentsserviceImageName = an.buildAndPush('commentsservice')
    }
+
    stage('Starte Testumgebung') {
 
         def t = an.startTestenvironment()
         sh './docker service update --replicas 1 --image ' + commentsserviceImageName + ' ' + t.fullServiceName('commentsservice')
 
 
+        borderproxyPort = t.getBorderproxyPort()
         commentsserviceWebport = t.getPublishedPort('commentsservice', 8080)
         echo '8080 -> ' + commentsserviceWebport
         an.waitForTCP(commentsserviceWebport)
@@ -36,14 +37,8 @@ node {
 
 stage ('Manuelle Tests'){
     def userInput = input(
-        id: 'userInput', message: 'Erfolgreich getestete Version erreichbar unter http://10.1.6.210:'+commentsserviceWebport+' Live Deployment?', parameters: [
-            [$class: 'TextParameterDefinition', defaultValue: 'uat', description: 'Environment', name: 'env'],
-            [$class: 'TextParameterDefinition', defaultValue: 'uat1', description: 'Target', name: 'target']
-        ]
+        id: 'userInput', message: 'Erfolgreich getestete Version erreichbar unter http://10.1.6.210:'+borderproxyPort+'/newspage/ Live Deployment?'
     )
-
-    echo ("Env: "+userInput['env'])
-    echo ("Target: "+userInput['target'])
 
 }
 
