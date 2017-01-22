@@ -8,7 +8,7 @@ angular.module('NewsApp')
 
             $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/comments/' + $scope.newsId
+                url: 'api/comments/' + $scope.newsId
 
             }).then(function successCallback(response) {
 
