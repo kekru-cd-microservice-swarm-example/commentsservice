@@ -57,7 +57,7 @@ router.get('/createTestdata', function(req, res) {
     collection.insert({
         "newsId": "news-schnee",
         "text": "Hallo Welt",
-        "autor": "Maxi"
+        "autor": "Max Mustermann"
     });
 
     collection.insert({
