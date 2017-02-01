@@ -1,36 +1,33 @@
 @Library('github.com/kekru-cd-microservice-swarm-example/jenkins-shared@master')
 import steps.CDMain
 
-def an
+def cdMain
 def commentsserviceWebport
 def commentsserviceImageName
 def borderproxyPort
 
 try{
     node {
-
         stage('Preparation') {
-
             git 'https://github.com/kekru-cd-microservice-swarm-example/commentsservice'
 
-            an = new CDMain(steps)
-            an.init()
+            cdMain = new CDMain(steps)
+            cdMain.init()
         }
 
         stage('Build') {
-            commentsserviceImageName = an.buildAndPush('commentsservice')
+            commentsserviceImageName = cdMain.buildAndPush('commentsservice')
         }
 
         stage('Starte Testumgebung') {
 
-            def t = an.startTestenvironment()
+            def t = cdMain.startTestenvironment()
             sh './docker service update --replicas 1 --image ' + commentsserviceImageName + ' ' + t.fullServiceName('commentsservice')
-
 
             borderproxyPort = t.getBorderproxyPort()
             commentsserviceWebport = t.getPublishedPort('commentsservice', 8080)
             echo '8080 -> ' + commentsserviceWebport
-            an.waitForTCP(commentsserviceWebport)
+            cdMain.waitForTCP(commentsserviceWebport)
        }
     }
 
@@ -52,6 +49,6 @@ try{
 
 node {
     stage ('Live Deployment'){
-        an.deployInProduction('commentsservice', commentsserviceImageName)
+        cdMain.deployInProduction('commentsservice', commentsserviceImageName)
     }
 }
