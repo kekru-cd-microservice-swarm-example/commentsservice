@@ -5,6 +5,7 @@ def cdMain
 def commentsserviceWebport
 def commentsserviceImageName
 def borderproxyPort
+def stack
 
 try{
     node {
@@ -21,11 +22,11 @@ try{
 
         stage('Starte Testumgebung') {
 
-            def t = cdMain.startTestenvironment()
-            sh './docker service update --replicas 1 --image ' + commentsserviceImageName + ' ' + t.fullServiceName('commentsservice')
+            stack = cdMain.startTestenvironment()
+            sh './docker service update --replicas 1 --image ' + commentsserviceImageName + ' ' + stack.fullServiceName('commentsservice')
 
-            borderproxyPort = t.getBorderproxyPort()
-            commentsserviceWebport = t.getPublishedPort('commentsservice', 8080)
+            borderproxyPort = stack.getBorderproxyPort()
+            commentsserviceWebport = stack.getPublishedPort('commentsservice', 8080)
             echo '8080 -> ' + commentsserviceWebport
             cdMain.waitForTCP(commentsserviceWebport)
        }
