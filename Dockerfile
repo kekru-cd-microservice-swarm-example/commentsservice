@@ -5,7 +5,7 @@ ADD . /data
 WORKDIR /data
 RUN npm install
 
-HEALTHCHECK --interval=5m --timeout=3s CMD curl -f http://localhost:8080/ || exit 1
+HEALTHCHECK --interval=20s  --timeout=5s --retries=3 CMD curl -f http://localhost:8080/ || exit 1
 
 CMD node main.js
 
